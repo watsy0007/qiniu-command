@@ -47,7 +47,7 @@ class Qiniu
   end
 end
 
-qiniu = Qiniu.new('watsy0007@gmail.com', 'watsy310', 'markdowntmp')
+qiniu = Qiniu.new('watsy0007@gmail.com', 'password', 'markdowntmp')
 
 #qiniu.upload('1111', '/Users/watsy/Desktop/0F5074FB-8605-47F9-921B-004FB93FE737.png') do |f|
 #    puts f
