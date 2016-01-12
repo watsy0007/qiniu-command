@@ -8,5 +8,5 @@
 ## 使用方法
 
 ```shell
-ruby upload.rb 账号 密码 bucket 域名 前缀 key
+ruby upload.rb 账号 密码 bucket 域名 前缀 key path
 ``` 
