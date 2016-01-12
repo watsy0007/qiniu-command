@@ -35,7 +35,7 @@ class Qiniu
            puts "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx errors"
            return
           end
-          urls << "#{@domain}/#{@prefix}/#{key}"
+          urls << "#{@domain}/#{key}"
         end
       end
     end
