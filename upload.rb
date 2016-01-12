@@ -21,14 +21,23 @@ class Qiniu
     index = 1
     #TODO 1. 收集key url
     #TODO 2. 错误提示收集，报警
+    urls = []
     Dir.foreach(path) do |file_name|
       if file_name != '.' && file_name != '..'
-        file_path = "#{path}/#{file_name}"
+        file_path = "#{path}/#{file_name}".gsub(' ', '\ ')
         key = "#{SecureRandom.uuid}.#{index}.#{file_name.split('.').last}"
         index += 1
-        upload(key, file_path.gsub(' ', '\ '))
+        upload(key, file_path) do |f|
+          if f.nil?
+           puts "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx errors"
+           return
+          end
+          urls << file_path
+          puts f
+        end
       end
     end
+    puts urls
   end
 
   def stat(key, &block)
