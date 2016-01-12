@@ -1,3 +1,5 @@
+require 'securerandom'
+
 class Qiniu
   def initialize(user, pass, bucket = nil)
     @bucket = bucket
@@ -16,7 +18,17 @@ class Qiniu
   end
 
   def upload_path(path)
-
+    index = 1
+    #TODO 1. 收集key url
+    #TODO 2. 错误提示收集，报警
+    Dir.foreach(path) do |file_name|
+      if file_name != '.' && file_name != '..'
+        file_path = "#{path}/#{file_name}"
+        key = "#{SecureRandom.uuid}.#{index}.#{file_name.split('.').last}"
+        index += 1
+        upload(key, file_path.gsub(' ', '\ '))
+      end
+    end
   end
 
   def stat(key, &block)
@@ -37,6 +49,8 @@ end
 
 qiniu = Qiniu.new('watsy0007@gmail.com', 'watsy310', 'markdowntmp')
 
-qiniu.upload('1111', '/Users/watsy/Desktop/0F5074FB-8605-47F9-921B-004FB93FE737.png') do |f|
-    puts f
-end
+#qiniu.upload('1111', '/Users/watsy/Desktop/0F5074FB-8605-47F9-921B-004FB93FE737.png') do |f|
+#    puts f
+#end
+
+qiniu.upload_path("/Users/watsy/Desktop/亿采网A+ BP\ 2016.1")
