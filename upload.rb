@@ -1,8 +1,11 @@
 require 'securerandom'
 
 class Qiniu
-  def initialize(user, pass, bucket = nil)
+  def initialize(user, pass, bucket = nil, domain = nil, prefix = nil, uuid_key = nil)
     @bucket = bucket
+    @domain = domain
+    @prefix = prefix
+    @uuid_key = uuid_key.nil? ? SecureRandom.uuid : uuid_key
     exec('login', [user, pass])
   end
 
@@ -17,7 +20,7 @@ class Qiniu
     end
   end
 
-  def upload_path(path)
+  def upload_path(path, &block)
     index = 1
     #TODO 1. 收集key url
     #TODO 2. 错误提示收集，报警
@@ -25,19 +28,19 @@ class Qiniu
     Dir.foreach(path) do |file_name|
       if file_name != '.' && file_name != '..'
         file_path = "#{path}/#{file_name}".gsub(' ', '\ ')
-        key = "#{SecureRandom.uuid}.#{index}.#{file_name.split('.').last}"
+        key = "#{@prefix}/#{@uuid_key}.#{index}.#{file_name.split('.').last}"
         index += 1
         upload(key, file_path) do |f|
           if f.nil?
            puts "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx errors"
            return
           end
-          urls << file_path
-          puts f
+          urls << "#{@domain}/#{@prefix}/#{key}"
         end
       end
     end
-    puts urls
+    yield(urls) if block_given?
+    urls
   end
 
   def stat(key, &block)
@@ -49,17 +52,15 @@ class Qiniu
   def exec(command, args = nil)
    args = args.nil? ? [] : args
    command = "./qrsctl #{command} #{args.join(' ')}"
-   puts command
+   #puts command
    IO.popen(command) do |f|
      yield(f.read) if block_given?
    end
   end
 end
 
-qiniu = Qiniu.new('watsy0007@gmail.com', 'password', 'markdowntmp')
+qiniu = Qiniu.new(ARGV[0], ARGV[1], ARGV[2], ARGV[3], ARGV[4], ARGV[5])
 
-#qiniu.upload('1111', '/Users/watsy/Desktop/0F5074FB-8605-47F9-921B-004FB93FE737.png') do |f|
-#    puts f
-#end
-
-qiniu.upload_path("/Users/watsy/Desktop/亿采网A+ BP\ 2016.1")
+qiniu.upload_path("/Users/watsy/Desktop/亿采网A+ BP\ 2016.1") do |urls|
+  puts urls
+end
