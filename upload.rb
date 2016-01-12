@@ -61,6 +61,6 @@ end
 
 qiniu = Qiniu.new(ARGV[0], ARGV[1], ARGV[2], ARGV[3], ARGV[4], ARGV[5])
 
-qiniu.upload_path("/Users/watsy/Desktop/亿采网A+ BP\ 2016.1") do |urls|
+qiniu.upload_path(ARGV[6]) do |urls|
   puts urls
 end
